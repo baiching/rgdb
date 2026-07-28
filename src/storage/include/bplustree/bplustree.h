@@ -24,9 +24,8 @@ namespace rgdb {
 		Bplustree(uint32_t max_keys, bool enable_stats);
 		~Bplustree();
 		
+		template<typename Key>
 		int compare_keys(Key key1, Key key2);
-
-		void free_tree(bplustree* tree); // will be removed
 
 		template<typename Key, typename Val>
 		Bplus_state insert(const Key* key, Val value);
@@ -40,6 +39,7 @@ namespace rgdb {
 		template<typename Key>
 		Bplus_state remove(const Key* key);
 
+		template<typename Key>
 		std::vector<std::any> range(const Key* start, const Key* end);
 
 	private:

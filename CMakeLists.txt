@@ -17,7 +17,7 @@ set(PG_QUERY_INCLUDE_DIR "${PG_QUERY_DIR}")
 set(PG_QUERY_LIBRARY "${PG_QUERY_DIR}/pg_query.lib")
 
 # Add source to this project's executable.
-add_executable (rgdb "src/rgdb.cpp" "src/rgdb.h")
+add_executable (rgdb "src/rgdb.cpp" "src/rgdb.h" "src/storage/bplustree/bplustree.cpp")
 
 target_include_directories(rgdb PRIVATE ${PG_QUERY_INCLUDE_DIR})
 target_link_libraries(rgdb PRIVATE ${PG_QUERY_LIBRARY})
