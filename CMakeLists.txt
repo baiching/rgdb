@@ -22,8 +22,21 @@ add_executable (rgdb "src/rgdb.cpp" "src/rgdb.h" "src/storage/bplustree/bplustre
 target_include_directories(rgdb PRIVATE ${PG_QUERY_INCLUDE_DIR})
 target_link_libraries(rgdb PRIVATE ${PG_QUERY_LIBRARY})
 
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET rgdb PROPERTY CXX_STANDARD 20)
 endif()
 
 # TODO: Add tests and install targets if needed.
+# mimalloc 
+include(FetchContent)
+
+FetchContent_Declare(
+  mimalloc
+  GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
+  GIT_TAG        v3.4.3 # Use the latest stable version
+)
+FetchContent_MakeAvailable(mimalloc)
+
+# Link directly to the fetched target (it handles overrides automatically)
+target_link_libraries(rgdb PRIVATE mimalloc)
