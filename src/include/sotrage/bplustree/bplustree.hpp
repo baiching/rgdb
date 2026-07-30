@@ -5,16 +5,16 @@
 #include<cstdint>
 
 namespace rgdb {
-
+	typedef enum {
+		BPLUS_SUCCESS = 0,
+		BPLUS_DUPLICATE_KEY,
+		BPLUS_MEM_ALLOCATION_FAILURE,
+		BPLUS_INVALID_ARGUMENT,
+		BPLUS_UNKNOWN_ERROR
+	} Bplus_state;
 	class Bplustree {
 	public:
-		typedef enum {
-			BPLUS_SUCCESS = 0,
-			BPLUS_DUPLICATE_KEY,
-			BPLUS_MEM_ALLOCATION_FAILURE,
-			BPLUS_INVALID_ARGUMENT,
-			BPLUS_UNKNOWN_ERROR
-		} Bplus_state;
+		
 
 		typedef struct {
 			int total_pairs;
