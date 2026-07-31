@@ -4,6 +4,7 @@
 #include "rgdb.h"
 
 #include <pg_query.h>
+#include "common/malloc_mi.hpp"
 
 
 #include <stdio.h>
@@ -20,7 +21,7 @@ const char* tests[] = {
 };
 
 int main() {
-
+    int d = (int)malloc(10);
     const char* sql = "SELECT * FROM users WHERE age > 30;";
 
     // Test a basic parser footprint

@@ -1,5 +1,5 @@
-#include "../../include/sotrage/bplustree/bplustree.hpp"
-#include <Windows.h>
+#include "storage/bplustree/bplustree.hpp"
+#include "common/windows.hpp"
 
 namespace rgdb {
 
