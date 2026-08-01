@@ -23,7 +23,13 @@ namespace rgdb {
 
 		struct PageHeader
 		{
+			bool is_dirty;
 			uint8_t* page_ptr;
+
+			uint64_t page_id;
+			uint64_t ref_count; /* How many time it has been called */
+			uint64_t last_accessed; /* Helps with page eviction logic */
+			uint64_t page_type;		/* Data / Index */
 
 			std::atomic<PageState> pstate{ PageState::CLEAN };
 		};
@@ -34,7 +40,8 @@ namespace rgdb {
 		~PageAllocator();
 
 	public:
-		std::vector<PageHeader*> getPage(const uint64_t num_of_pages);
+		/*  returns one page from allocated memory  */
+		PageHeader* getPage();
 
 		// Only increases existing size
 		void* resize(void *page_ptr, uint64_t total_size, uint64_t total_blocks);
