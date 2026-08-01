@@ -14,37 +14,49 @@ namespace rgdb {
 		PageAllocator::pages = malloc_aligned(PAGE_SIZE * TOTAL_PAGES, PAGE_SIZE);
 	}
 
-	std::vector<PageAllocator::PageHeader *> PageAllocator::getPage(const uint64_t num_of_pages) {
-		std::vector<PageAllocator::PageHeader*> ph;
+	PageAllocator::PageHeader *PageAllocator::getPage() {
 		PageAllocator::PageHeader* page;
-		ph.reserve(num_of_pages);
+		
+		size_t old_offset = offset.load(std::memory_order_acquire);
+		size_t new_offset;
 
-		//PageHeader *ph[num_of_pages];
-		for (uint64_t i = 0; i < num_of_pages; i++) {
-			auto cur = offset.fetch_add(PAGE_SIZE);
-
-			if (cur + PAGE_SIZE <= TOTAL_BYTES)
+		do
+		{
+			if (old_offset + PAGE_SIZE > TOTAL_BYTES)
 			{
-				page = (PageAllocator::PageHeader*)((uint8_t*)PageAllocator::pages + cur);
-				page->page_ptr = (uint8_t*)PageAllocator::pages + cur;
-				page->pstate.store(PageState::IN_USE, std::memory_order_relaxed);
-
-				ph.push_back(page);
-				continue;
+				return nullptr;
 			}
+			new_offset = old_offset + PAGE_SIZE;
 
-			offset.fetch_sub(PAGE_SIZE); /* It's a temporary measure. Needs fixing, somehow need to stop adding once the buffer is exhausted */
-			
-			
-			if (clean_pages.try_dequeue(page))
-			{
-				page->pstate = PageState::IN_USE;
-				ph.push_back(page);
-			}
+		} while (!offset.compare_exchange_weak(old_offset, new_offset,
+				std::memory_order_release, std::memory_order_relaxed));
+
+		page = (PageAllocator::PageHeader*)((uint8_t*)PageAllocator::pages + new_offset);
+		page->page_ptr = (uint8_t*)PageAllocator::pages + new_offset;
+		page->pstate.store(PageState::IN_USE, std::memory_order_relaxed);
+
+		return page;
+
+			//if (cur + PAGE_SIZE <= TOTAL_BYTES)
+			//{
+			//	page = (PageAllocator::PageHeader*)((uint8_t*)PageAllocator::pages + cur);
+			//	page->page_ptr = (uint8_t*)PageAllocator::pages + cur;
+			//	page->pstate.store(PageState::IN_USE, std::memory_order_relaxed);
+
+			//	ph.push_back(page);
+			//	continue;
+			//}
+
+			//offset.fetch_sub(PAGE_SIZE); /* It's a temporary measure. Needs fixing, somehow need to stop adding once the buffer is exhausted */
+			//
+			//
+			//if (clean_pages.try_dequeue(page))
+			//{
+			//	page->pstate = PageState::IN_USE;
+			//	ph.push_back(page);
+			//}
 			/* eviction will go here , we can also do emergency flush on demand to free up some pages */
 			
-		}
-
-		return ph;
+		
 	}
 }
