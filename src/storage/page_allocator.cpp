@@ -59,4 +59,14 @@ namespace rgdb {
 			
 		
 	}
+
+	bool PageAllocator::destroyPool() {
+		/* we should add flush everything before release, to ensure no data gets lost */
+
+		free(pages);
+
+		pages = nullptr;
+
+		return true;
+	}
 }

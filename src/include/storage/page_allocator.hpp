@@ -44,9 +44,10 @@ namespace rgdb {
 		PageHeader* getPage();
 
 		// Only increases existing size
-		void* resize(void *page_ptr, uint64_t total_size, uint64_t total_blocks);
+		//void* resize(void *page_ptr, uint64_t total_size, uint64_t total_blocks);
 
-		bool freePage(uint8_t* page);
+		/* frees the everything in one shot */
+		bool destroyPool();
 
 	};
 }
