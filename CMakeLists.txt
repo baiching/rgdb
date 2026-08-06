@@ -18,7 +18,7 @@ set(PG_QUERY_INCLUDE_DIR "${PG_QUERY_DIR}")
 set(PG_QUERY_LIBRARY "${PG_QUERY_DIR}/pg_query.lib")
 
 # Add source to this project's executable.
-add_executable (rgdb "src/rgdb.cpp" "src/rgdb.h" "src/storage/bplustree/bplustree.cpp" "src/storage/page_allocator.cpp")
+add_executable (rgdb "src/rgdb.cpp" "src/rgdb.h" "src/storage/bplustree/bplustree.cpp" "src/storage/page_allocator.cpp" "src/data_structures/safe_map.cpp")
 
 target_include_directories(rgdb PRIVATE ${PG_QUERY_INCLUDE_DIR})
 target_include_directories(rgdb PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/include)

@@ -36,26 +36,6 @@ namespace rgdb {
 		page->pstate.store(PageState::IN_USE, std::memory_order_relaxed);
 
 		return page;
-
-			//if (cur + PAGE_SIZE <= TOTAL_BYTES)
-			//{
-			//	page = (PageAllocator::PageHeader*)((uint8_t*)PageAllocator::pages + cur);
-			//	page->page_ptr = (uint8_t*)PageAllocator::pages + cur;
-			//	page->pstate.store(PageState::IN_USE, std::memory_order_relaxed);
-
-			//	ph.push_back(page);
-			//	continue;
-			//}
-
-			//offset.fetch_sub(PAGE_SIZE); /* It's a temporary measure. Needs fixing, somehow need to stop adding once the buffer is exhausted */
-			//
-			//
-			//if (clean_pages.try_dequeue(page))
-			//{
-			//	page->pstate = PageState::IN_USE;
-			//	ph.push_back(page);
-			//}
-			/* eviction will go here , we can also do emergency flush on demand to free up some pages */
 			
 		
 	}

@@ -15,7 +15,7 @@ namespace rgdb {
 		std::shared_mutex lock;
 
 	public:
-		SafeHashMap();
+		SafeHashMap(std::unordered_map<Key, Value> map);
 
 		void insert(Key& key, const Value& value);
 		void insert(Key&& key, Value&& value);
