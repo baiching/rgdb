@@ -25,20 +25,20 @@ namespace rgdb {
 
 		bool try_insert(Key& key, const Value& value);
 
-		std::optional<Value> get(Key& key);
+		std::optional<Value> get(Key& key) const;
 		bool erase(Key& key);
 		bool contains(Key& key);
-		size_t size();
-		bool empty();
+		size_t size() const;
+		bool empty() const;
 		void clear();
 		std::vector<Key> get_all_keys() const;
-		std::vector<Key> get_all_values() const;
+		std::vector<Value> get_all_values() const;
 
 		// read-only to iterate
-		void for_each(std::function<void(const Key& key, const Value& value)>) const;
+		void for_each(std::function<void(const Key&, const Value&)>) const;
 
 		// iterate: read and write both
-		void for_each_mut(std::function<void(Key&, Value&)>);
+		void for_each_mut(std::function<void(Key&, Value&)> func);
 
 		void reserve(size_t size);
 
