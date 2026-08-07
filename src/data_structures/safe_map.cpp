@@ -1,4 +1,7 @@
 #include "data_structures/safe_map.hpp"
+#include <vector>
+#include <functional>
+#include <optional>
 
 namespace rgdb {
 	
@@ -7,7 +10,13 @@ namespace rgdb {
 	}
 
 	template<typename Key, typename Value>
-	void SafeHashMap<Key, Value>::insert(Key& key, const Value& value) {
+	Value SafeHashMap<Key, Value>::operator[](const Key& key) {
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
+		return this->map[key];
+	}
+
+	template<typename Key, typename Value>
+	void SafeHashMap<Key, Value>::insert(const Key& key, const Value& value) {
 		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 		this->map[key] = value;
 	}
@@ -26,36 +35,36 @@ namespace rgdb {
 	}
 
 	template<typename Key, typename Value>
-	bool SafeHashMap<Key, Value>::try_insert(Key& key, const Value& value) {
+	bool SafeHashMap<Key, Value>::try_insert(const Key& key, const Value& value) {
 		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 		auto res = this->map.insert({ key, value });
 		return res.second;
 	}
 
 	template<typename Key, typename Value>
-	std::optional<Value> SafeHashMap<Key, Value>::get(Key& key) const {
+	std::optional<Value> SafeHashMap<Key, Value>::get(const Key& key) const {
 		std::shared_lock<std::shared_mutex> read_lock(this->lock);
 		auto it = this->map.find(key);
 
 		if (it != this->map.end())
 		{
-			return it.second;
+			return it->second;
 		}
 
-		return nullptr;
+		return std::nullopt;
 	}
 
 	template<typename Key, typename Value>
-	bool SafeHashMap<Key, Value>::erase(Key& key) {
+	bool SafeHashMap<Key, Value>::erase(const Key& key) {
 		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 
 		auto res = this->map.erase(key);
 
-		return res.second;
+		return res > 0;
 	}
 
 	template<typename Key, typename Value>
-	bool SafeHashMap<Key, Value>::contains(Key& key) {
+	bool SafeHashMap<Key, Value>::contains(const Key& key) const {
 		std::shared_lock<std::shared_mutex> read_lock(this->lock);
 
 		return this->map.find(key) != this->map.end();
@@ -77,7 +86,7 @@ namespace rgdb {
 
 	template<typename Key, typename Value>
 	void SafeHashMap<Key, Value>::clear() {
-		std::shared_lock<std::shared_mutex> read_lock(this->lock);
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 
 		this->map.clear();
 	}

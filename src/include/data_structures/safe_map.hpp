@@ -15,19 +15,23 @@ namespace rgdb {
 		std::shared_mutex lock;
 
 	public:
+		SafeHashMap() = default;
+
 		SafeHashMap(std::unordered_map<Key, Value> map);
 
-		void insert(Key& key, const Value& value);
+		Value operator[](const Key& key);
+
+		void insert(const Key& key, const Value& value);
 		void insert(Key&& key, Value&& value);
 
 		template<typename... Args>
 		void emplace(Args... args);
 
-		bool try_insert(Key& key, const Value& value);
+		bool try_insert(const Key& key, const Value& value);
 
-		std::optional<Value> get(Key& key) const;
-		bool erase(Key& key);
-		bool contains(Key& key);
+		std::optional<Value> get(const Key& key) const;
+		bool erase(const Key& key);
+		bool contains(const Key& key) const;
 		size_t size() const;
 		bool empty() const;
 		void clear();
