@@ -139,4 +139,25 @@ namespace rgdb {
 		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 		func(this->map);
 	}
+
+	template<typename Key, typename Value>
+	void SafeHashMap<Key, Value>::reserve(size_t size) {
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
+		this->map.reserve(size);
+	}
+
+	template<typename Key, typename Value>
+	void SafeHashMap<Key, Value>::rehash(size_t size) {
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
+		this->map.rehash(size);
+	}
+
+	template<typename Key, typename Value>
+	void SafeHashMap<Key, Value>::swap(SafeHashMap& other) noexcept {
+		if (this != &other) {
+			std::scoped_lock lock(this->lock, other.lock);
+			this->map.swap(other.map);
+		}
+		
+	}
 }
