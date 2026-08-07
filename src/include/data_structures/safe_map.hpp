@@ -40,6 +40,14 @@ namespace rgdb {
 		// iterate: read and write both
 		void for_each_mut(std::function<void(Key&, Value&)> func);
 
+		// execute function with read lock
+		template<typename Func>
+		auto with_read_lock(Func func) const;
+
+		// execute function with read lock
+		template<typename Func>
+		auto with_write_lock(Func func) const;
+
 		void reserve(size_t size);
 
 		void rehash(size_t size);

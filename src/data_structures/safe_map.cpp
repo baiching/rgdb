@@ -37,7 +37,7 @@ namespace rgdb {
 		std::shared_lock<std::shared_mutex> read_lock(this->lock);
 		auto it = this->map.find(key);
 
-		if (it == this->map.end())
+		if (it != this->map.end())
 		{
 			return it.second;
 		}
@@ -47,7 +47,7 @@ namespace rgdb {
 
 	template<typename Key, typename Value>
 	bool SafeHashMap<Key, Value>::erase(Key& key) {
-		std::shared_lock<std::shared_mutex> read_lock(this->lock);
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
 
 		auto res = this->map.erase(key);
 
@@ -98,7 +98,7 @@ namespace rgdb {
 	template<typename Key, typename Value>
 	std::vector<Value> SafeHashMap<Key, Value>::get_all_values() const {
 		std::shared_lock<std::shared_mutex> read_lock(this->lock);
-		std::vector<Key> res;
+		std::vector<Value> res;
 		res.reserve(this->map.size());
 
 		for (const auto& pair : this->map) {
