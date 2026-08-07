@@ -116,4 +116,27 @@ namespace rgdb {
 			func(pair.first, pair.second);
 		}
 	}
+
+	template<typename Key, typename Value>
+	void SafeHashMap<Key, Value>::for_each_mut(std::function<void(Key&, Value&)> func) {
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
+
+		for (auto& pair : this->map) {
+			func(pair.first, pair.second);
+		}
+	}
+
+	template<typename Key, typename Value>
+	template<typename Func>
+	auto SafeHashMap<Key, Value>::with_read_lock(Func func) const {
+		std::shared_lock<std::shared_mutex> read_lock(this->lock);
+		func(this->map);
+	}
+
+	template<typename Key, typename Value>
+	template<typename Func>
+	auto SafeHashMap<Key, Value>::with_write_lock(Func func) const {
+		std::unique_lock<std::shared_mutex> write_lock(this->lock);
+		func(this->map);
+	}
 }
