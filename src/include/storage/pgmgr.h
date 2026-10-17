@@ -4,9 +4,12 @@
 #include <stdint.h>
 
 typedef struct PageHeader PageHeader;
+typedef struct PageCache PageCache;
+typedef struct RgdbPage RgdbPage;
 
 /* Every page should hold this structure */
 struct PageHeader {
+	PageCache* pageCache;	/* Owner of this page */
 	uint32_t pageId;		/* this is temporary */
 	void* pageData;			/* page data */
 	void* pageExtras;		/* Extra contents */
@@ -45,6 +48,17 @@ int rgdb_pageCache_newPageCache(
 	uint32_t extraSize,
 	int bPurgable
 )
+
+/* modify the page size after cacche been created */
+int rgdb_pageCache_setPageSize(PageCache *, int);
+
+/* returns cache size */
+int rgdb_pageCache_size(void);
+
+/* page related operations */
+RgdbPage *rgdb_pageCache_fetch(PageCache *, uint32_t pageid, int flag); /* get the page */
+PageHeader *rgdb_pageCache_finishFetch(PageCache*, uint32_t pageid, RgdbPage *page); 
+void rgdb_pageCache_releasePage(PageHeader*); /* unpinned */
 
 #endif // !PG_MRG_H
 
