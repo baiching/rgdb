@@ -1,5 +1,5 @@
-#ifndef PG_MGR_H
-#define PG_MGR_H
+#ifndef PAGECACHE_H
+#define PAGECACHE_H
 
 #include <stdint.h>
 
@@ -47,7 +47,7 @@ int rgdb_pageCache_newPageCache(
 	uint32_t pageSize,
 	uint32_t extraSize,
 	int bPurgable
-)
+);
 
 /* modify the page size after cacche been created */
 int rgdb_pageCache_setPageSize(PageCache *, int);
@@ -60,5 +60,30 @@ RgdbPage *rgdb_pageCache_fetch(PageCache *, uint32_t pageid, int flag); /* get t
 PageHeader *rgdb_pageCache_finishFetch(PageCache*, uint32_t pageid, RgdbPage *page); 
 void rgdb_pageCache_releasePage(PageHeader*); /* unpinned */
 
-#endif // !PG_MRG_H
+void rgdb_pageCache_drop(PageHeader*);			/* drop the page */
+void rgdb_pageCache_markDirty(PageHeader*);		/* Mark this as dirty */
+void rgdb_pageCache_markClean(PageHeader*);		/* Mark this as clean */
+void rgdb_pageCache_markCleanAll(PageCache*);	/* Mark all pages as clean in the list */
+void rgdb_pageCache_markCleanWritable(PageCache*);
+
+void rgdb_pageCache_changePageID(PageHeader*, int pageNumbe);	/* change a page id */
+
+void rgdb_pageCache_truncate(PageCache*, int x); /* remove all pages > x, if x == 0; reset the cache */
+void rgdb_pageCache_cleanFlags(PageCache*);			/* clear flags from the pages */
+void rgdb_pageCache_clearAllContents(PageCache*);	/* clear all contents of the cache */
+
+PageHeader* rgdb_pageCache_close(PageCache*);		/* reset and close cache object */
+
+uint32_t rgdb_pageCache_refCount(PageCache*);		/* return total number of reference */
+void rgdb_pageCache_refIncr(PageHeader*);			/* increase reference count of the page */
+uint32_t rgdb_pageCache_pageRefCount(PageHeader*);	/* */
+uint32_t rgdb_pageCache_pageCount(PageCache*);		/* returns total pages in the cache */
+
+void rgdb_pageCache_shrink(PageCache*);				/* tries to free up pages from the cache */
+uint32_t rgdb_pageCache_percentDirty(PageCache*);		/* number of dirty pages in the cache */
+
+uint32_t rgdb_pageCache_headerSize(void);			/* returns header size of the cache */
+
+
+#endif // !PAGECACHE_H
 
