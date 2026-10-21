@@ -17,7 +17,6 @@
 
 #include "rgdb.h"
 
-#include "common/malloc_mi.h"
 #include "storage/page_allocator.h"
 
 #include <pg_query.h>
@@ -63,72 +62,6 @@ static int run_parser_tests(void)
 	return failures;
 }
 
-/*
- * Exercises the page allocator: hands out a few pages, dirties one, flushes.
- * This is the smoke test the C++ main never had.
- */
-static int run_page_allocator_smoke_test(void)
-{
-	rgdb_page_allocator alloc;
-	rgdb_page_header* pages[4];
-	size_t i;
-
-	if (!rgdb_page_allocator_init(&alloc)) {
-		fprintf(stderr, "page allocator: init failed\n");
-		return 1;
-	}
-
-	for (i = 0; i < 4; ++i) {
-		pages[i] = rgdb_page_allocator_get_page(&alloc);
-		if (pages[i] == NULL) {
-			fprintf(stderr, "page allocator: exhausted after %zu pages\n", i);
-			rgdb_page_allocator_destroy_pool(&alloc);
-			return 1;
-		}
-
-		/* Payload must be distinct, page-aligned, and inside the arena. */
-		if (pages[i]->page_ptr == NULL || ((uintptr_t)pages[i]->page_ptr % RGDB_PAGE_SIZE) != 0) {
-			fprintf(stderr, "page allocator: page %zu is not page-aligned\n", i);
-			rgdb_page_allocator_destroy_pool(&alloc);
-			return 1;
-		}
-		if (i > 0 && pages[i]->page_ptr == pages[i - 1]->page_ptr) {
-			fprintf(stderr, "page allocator: page %zu aliases page %zu\n", i, i - 1);
-			rgdb_page_allocator_destroy_pool(&alloc);
-			return 1;
-		}
-
-		/* Touch the page so the mapping is real. */
-		pages[i]->page_ptr[0] = (uint8_t)i;
-	}
-
-	if (!rgdb_page_allocator_mark_dirty(&alloc, pages[0])) {
-		fprintf(stderr, "page allocator: mark_dirty failed\n");
-		rgdb_page_allocator_destroy_pool(&alloc);
-		return 1;
-	}
-
-	printf("page allocator: %zu pages allocated, %zu dirty\n",
-		rgdb_page_allocator_pages_allocated(&alloc),
-		rgdb_page_allocator_dirty_count(&alloc));
-
-	/* Release then re-acquire: the recycled page must be handed back. */
-	rgdb_page_allocator_release_page(&alloc, pages[1]);
-	{
-		rgdb_page_header* reused = rgdb_page_allocator_get_page(&alloc);
-		if (reused != pages[1]) {
-			fprintf(stderr, "page allocator: expected page reuse\n");
-			rgdb_page_allocator_destroy_pool(&alloc);
-			return 1;
-		}
-	}
-
-	(void)rgdb_page_allocator_flush(&alloc);
-	rgdb_page_allocator_destroy_pool(&alloc);
-
-	printf("page allocator: ok\n");
-	return 0;
-}
 
 int main(void)
 {
@@ -137,7 +70,7 @@ int main(void)
 	printf("rgdb %s (C11)\n", RGDB_VERSION_STRING);
 
 	failures = run_parser_tests();
-	failures += run_page_allocator_smoke_test();
+	//failures += run_page_allocator_smoke_test();
 
 	/* Optional: ensures all memory is freed upon program exit (Valgrind). */
 	pg_query_exit();

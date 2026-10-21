@@ -2,7 +2,7 @@ set(headers "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_subdirectory(storage)
 
-add_executable(rgdb "rgdb.c")
+add_executable(rgdb "rgdb.c" "common/logger.c")
 
 target_link_libraries(rgdb PRIVATE storage)
 
@@ -27,10 +27,10 @@ target_include_directories(rgdb_headers INTERFACE
 
 # Naming the headers keeps them visible to IDEs and ties them to the target.
 target_sources(rgdb_headers INTERFACE
-  "${headers}/common/malloc_mi.h"
   "${headers}/common/windows.h"
   "${headers}/data_structures/safe_map.h"
   "${headers}/storage/page_allocator.h"
+  "${headers}/storage/pageCache.h"
   "${headers}/storage/bplustree/bplustree.h"
 )
 

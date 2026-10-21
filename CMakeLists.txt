@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if(POLICY CMP0141)
@@ -6,8 +6,6 @@ if(POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>")
 endif()
 
-# C is the primary language; CXX is enabled only to build GoogleTest, which is
-# itself C++. The rgdb executable target never links the C++ runtime.
 project(rgdb LANGUAGES C)
 
 option(RGDB_BUILD_TESTS "Build the rgdb test executables" ON)
@@ -23,34 +21,23 @@ set(3rdParty_lib "${CMAKE_SOURCE_DIR}/lib/data_structure")
 add_subdirectory(src)
 
 target_link_libraries(rgdb PRIVATE "${PG_QUERY_LIBRARY}" "${3rdParty_lib}")
+target_include_directories(rgdb PRIVATE "${PG_QUERY_INCLUDE_DIR}")
 
-# C11, and nothing else.
+# Let CMake handle the C standard for compilers that support it.
 set_target_properties(rgdb PROPERTIES
   C_STANDARD 11
   C_STANDARD_REQUIRED ON
-  C_EXTENSIONS OFF          # -std=c11 / /std:c11, not gnu11
+  C_EXTENSIONS OFF
 )
-target_compile_features(rgdb PRIVATE c_std_11)
 
 if(MSVC)
-  target_compile_options(rgdb PRIVATE /W4 /std:c11 /experimental:c11atomics)
-  target_compile_definitions(rgdb PRIVATE
-    _CRT_SECURE_NO_WARNINGS
+  target_compile_options(rgdb PRIVATE 
+    /W4 
+    /std:c11
+    /experimental:c11atomics
   )
+  target_compile_definitions(rgdb PRIVATE _CRT_SECURE_NO_WARNINGS)
 else()
-  target_compile_options(rgdb PRIVATE -Wall -Wextra -Wpedantic -std=c11)
+  target_compile_options(rgdb PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-
-
-include(FetchContent)
-
-
-  FetchContent_Declare(
-    mimalloc
-    GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
-    GIT_TAG        v3.5.3
-  )
-  FetchContent_MakeAvailable(mimalloc)
-
-target_link_libraries(rgdb PRIVATE mimalloc)
 
