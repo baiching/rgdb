@@ -17,7 +17,6 @@ set(PG_QUERY_LIBRARY "${PG_QUERY_DIR}/pg_query.lib")
 
 set(3rdParty_lib "${CMAKE_SOURCE_DIR}/lib/data_structure")
 
-#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/data_structure")
 add_subdirectory(src)
 
 target_link_libraries(rgdb PRIVATE "${PG_QUERY_LIBRARY}" "${3rdParty_lib}")
@@ -37,6 +36,14 @@ if(MSVC)
     /experimental:c11atomics
   )
   target_compile_definitions(rgdb PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+ elseif(CMAKE_C_COMPILER_ID MATCHES "Clang" AND CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
+  # Specific flags for clang-cl
+  target_compile_options(rgdb PRIVATE
+    -ffreestanding
+    -fno-ms-compatibility   # <-- The key addition
+    -std=c11               # Explicitly set the standard (clang-cl default is C17)
+  )
 else()
   target_compile_options(rgdb PRIVATE -Wall -Wextra -Wpedantic)
 endif()

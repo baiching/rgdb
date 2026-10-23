@@ -28,6 +28,8 @@ target_include_directories(rgdb_headers INTERFACE
 # Naming the headers keeps them visible to IDEs and ties them to the target.
 target_sources(rgdb_headers INTERFACE
   "${headers}/common/windows.h"
+  "${headers}/common/c89atomic.h"
+  "${headers}/common/tinycthread.h"
   "${headers}/data_structures/safe_map.h"
   "${headers}/storage/page_allocator.h"
   "${headers}/storage/pageCache.h"
