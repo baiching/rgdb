@@ -38,8 +38,8 @@ struct PageHeader {
 #define PAGEHEADER_UNPINNED		0x080	/* page is not in use */
 
 /* Initilize and shut down page cache entirely */
-int rgdb_pageCache_initilize(void);
-void rgdb_pageCache_shutDown(void);
+PageCache *rgdb_pageCache_initilize(void);
+void rgdb_pageCache_shutDown(PageCache* p);
 
 void rgdb_pageCache_bufferSetup(int size, int n);
 
