@@ -8,7 +8,7 @@ struct PageCache
 {
 	PageHeader *pageDirtyHead, *pageDirtyTail;
 	PageHeader* pageSynced;								/* last synced page in dirty list */
-	uint32_t numOfRefCount;								/* reference counts for all pages */
+	uint32_t numOfRefCount;								/* num of pages that are pinned */
 	size_t		cacheSize;
 	size_t		spillSize;								/* size before the spill */
 	size_t		pageSize;								/* size of every page in this cache */
@@ -152,4 +152,36 @@ static void pageCacheUnpin(PageHeader* p) {
 		p->flags = (p->flags & ~PAGEHEADER_PINNED) | PAGEHEADER_UNPINNED; /* removes pinned flag and adds unpinned flag */
 		print_cache(p->pageCache);
 	}
+}
+
+/* returns the cache size */
+static size_t numofCachePages(PageCache* p) {
+	return p->cacheSize;
+}
+
+/* primary initialization with some defaults */
+PageCache *rgdb_pageCache_initilize(void) {
+	PageCache* p = calloc(1, sizeof(*p));
+
+	p->cacheSize = 128 * 4096; /* 512 kb */
+	p->extraSize = 128 * 256; /* 32 KB */
+	p->numOfRefCount = 0;
+	p->pageDirtyHead = NULL;
+	p->pageDirtyTail = NULL;
+	p->pageSize = 4096;			/* 4kb per page */
+	p->pageSynced = NULL;
+	p->purgable = false;
+	p->spillSize = 10 * 4096;	/* 10 extra pages */
+
+	return p;
+}
+
+void rgdb_pageCache_shutDown(PageCache *p) {
+	/* we should clean the pages that this cache owns first 
+	*  then the pages needs to freed
+	* only after that the cache may shut down
+	* otherwise we'll have a massive leak
+	*/
+	if (p == NULL) return;
+	free(p);
 }
