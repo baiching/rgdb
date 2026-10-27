@@ -23,8 +23,6 @@
 
 #include "storage/bplustree/bplustree.h"
 
-#include "common/malloc_mi.h"
-
 #include <string.h>
 
 /* ------------------------------------------------------------------------- */

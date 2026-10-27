@@ -7,6 +7,8 @@ if(POLICY CMP0141)
 endif()
 
 project(rgdb LANGUAGES C)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 option(RGDB_BUILD_TESTS "Build the rgdb test executables" ON)
 option(RGDB_USE_MIMALLOC "Allocate through mimalloc instead of the CRT heap" ON)
