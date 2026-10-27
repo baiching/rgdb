@@ -2,13 +2,14 @@
 #include "common/logger.h"
 #include <stdbool.h>
 #include <assert.h>
+#include <memory.h>
 #include "common/c89atomic.h"
 
 struct PageCache
 {
 	PageHeader *pageDirtyHead, *pageDirtyTail;
-	PageHeader* pageSynced;								/* last synced page in dirty list */
-	uint32_t numOfRefCount;								/* num of pages that are pinned */
+	PageHeader* pageSynced;								       /* last synced page in dirty list */
+	uint32_t numOfRefCount;								       /* num of pages that are pinned */
 	size_t		cacheSize;
 	size_t		spillSize;								/* size before the spill */
 	size_t		pageSize;								/* size of every page in this cache */
@@ -156,7 +157,7 @@ static void pageCacheUnpin(PageHeader* p) {
 
 /* returns the cache size */
 static size_t numofCachePages(PageCache* p) {
-	return p->cacheSize;
+	return p->cacheSize / p->pageSize;
 }
 
 /* primary initialization with some defaults */
@@ -184,4 +185,28 @@ void rgdb_pageCache_shutDown(PageCache *p) {
 	*/
 	if (p == NULL) return;
 	free(p);
+}
+
+int rgdb_pageCache_newPageCache(
+	PageCache* p,
+	uint32_t pageSize,
+	uint32_t extraSize,
+	bool bPurgable
+) {
+
+	memset(p, 0, sizeof(PageCache));
+	p->pageSize = pageSize;
+	p->extraSize = extraSize;
+	p->purgable = bPurgable;
+
+	return 0;
+}
+
+int rgdb_pageCache_setPageSize(PageCache* p, int psize) {
+
+	p->pageSize = psize;
+
+	assert(p->pageSize);
+
+	return 0;
 }

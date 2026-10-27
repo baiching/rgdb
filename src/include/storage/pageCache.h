@@ -2,6 +2,7 @@
 #define PAGECACHE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct PageHeader PageHeader;
 typedef struct PageCache PageCache;
@@ -44,9 +45,10 @@ void rgdb_pageCache_shutDown(PageCache* p);
 void rgdb_pageCache_bufferSetup(int size, int n);
 
 int rgdb_pageCache_newPageCache(
+	PageCache *p,
 	uint32_t pageSize,
 	uint32_t extraSize,
-	int bPurgable
+	bool bPurgable
 );
 
 /* modify the page size after cacche been created */

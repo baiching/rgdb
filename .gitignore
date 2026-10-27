@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /test/test_c11_modules.c
 /SUMMARY.md
 /CMakePresets.json
+/build-ninja
