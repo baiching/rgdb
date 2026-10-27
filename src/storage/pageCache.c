@@ -205,8 +205,14 @@ int rgdb_pageCache_newPageCache(
 int rgdb_pageCache_setPageSize(PageCache* p, int psize) {
 
 	p->pageSize = psize;
-
 	assert(p->pageSize);
 
 	return 0;
+}
+
+RgdbPage *rgdb_pageCache_fetch(PageCache *p, uint32_t pageid, int flag) {
+  assert(p != 0);
+  assert(flag == 3 || flag == 0);
+
+  /* TODO : look for the page at hash table and linked list */
 }
