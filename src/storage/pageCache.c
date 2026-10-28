@@ -1,6 +1,7 @@
 #include "storage/pageCache.h"
 #include "common/logger.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <memory.h>
 #include "common/c89atomic.h"

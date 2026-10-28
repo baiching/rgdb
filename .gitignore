@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /CMakePresets.json
 /build-ninja
 src/storage/#pageCache.c#
+/build
