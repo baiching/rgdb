@@ -33,6 +33,7 @@ target_sources(rgdb_headers INTERFACE
   "${headers}/data_structures/safe_map.h"
   "${headers}/storage/page_allocator.h"
   "${headers}/storage/pageCache.h"
+  "${headers}/storage/pageCacheHelper.h"
   "${headers}/storage/bplustree/bplustree.h"
 )
 
