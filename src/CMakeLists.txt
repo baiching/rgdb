@@ -29,6 +29,7 @@ target_include_directories(rgdb_headers INTERFACE
 target_sources(rgdb_headers INTERFACE
   "${headers}/common/windows.h"
   "${headers}/common/c89atomic.h"
+  "${headers}/common/c89thread.h"
   "${headers}/common/tinycthread.h"
   "${headers}/data_structures/safe_map.h"
   "${headers}/storage/page_allocator.h"
