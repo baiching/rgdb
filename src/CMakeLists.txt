@@ -6,6 +6,15 @@ add_executable(rgdb "rgdb.c" "common/logger.c")
 
 target_link_libraries(rgdb PRIVATE storage)
 
+target_sources(rgdb
+  PUBLIC
+  FILE_SET rgdb_conf
+  TYPE HEADERS
+  BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}"
+
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/rgdb_sysconf.h")
+
+
 # pg_query.h sits in lib/parser; PG_QUERY_INCLUDE_DIR comes from the top-level
 # CMakeLists.txt.
 target_include_directories(rgdb PRIVATE "${PG_QUERY_INCLUDE_DIR}")
