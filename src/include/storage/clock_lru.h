@@ -7,11 +7,10 @@
 #include "common/c89atomic.h"
 
 #define BUFFER_POOL_SIZE 4 /* Pages in the buffer */
-#define BM_MAX_USAGE_COUNT 5 /*max usage count limit */
 
 typedef struct BufferTag BufferTag;
 typedef struct BufferDesc BufferDesc;
-typedef struct BufferDesc Lru;
+typedef struct Lru Lru;
 
 struct BufferTag {
   uint64_t relNode; /* Table/relation id */
@@ -23,17 +22,20 @@ struct BufferDesc {
   BufferTag tag;
   bool is_valid; /* true, if slot is not empty */
   bool is_dirty; /* true, if dirty */
-  c89atomic_int64 refBit; /* 0 means ready to evict, 1 means give a second chance */
+  c89atomic_int64
+      refBit; /* 0 means ready to evict, 1 means give a second chance */
+  uint8_t *data;
 };
 
 struct Lru {
   BufferDesc buffer[BUFFER_POOL_SIZE];
   size_t clockHand;
+  void *arena;
 };
 
 /* Initializes lru */
-void lruInit(Lru *pool);
-void lruDestroy(Lru *pool); /* Destroys the entire cache */
+Lru *lruInit(void);
+int lruDestroy(Lru *pool); /* Destroys the entire cache, returns  0 on success and -1 on failure */
 
 /* buf_id of the page, or -1 if not resident. */
 int lruLookup(const Lru *pool, const BufferTag *tag);

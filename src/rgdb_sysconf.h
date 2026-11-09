@@ -8,4 +8,5 @@
 #define rgdb_config_cacheSizeDefault ( rgdb_config_numOfPages * rgdb_config_pageSize )
 
 #define rgdb_config_cacheBufferSz (256)
+
 #endif
