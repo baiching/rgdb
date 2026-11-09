@@ -1,5 +1,6 @@
 #include "storage/clock_lru.h"
 #include "../rgdb_sysconf.h"
+#include "common/logger.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -42,5 +43,22 @@ Lru *ruInit() {
   pool->clockHand = 0;
 
   return pool;
-
 }
+
+int lruDestroy(Lru *pool) {
+  if (pool == NULL) {
+    LOG("Lru is already null");
+    return -1;
+  }
+
+  lruFlush_all(pool); /* if not empty flush it all first */
+
+  /* cleaning up pages individually */
+  for (int i = 0; i < rgdb_config_cacheBufferSz; i++){
+    free(pool->buffer[i].data);
+  }
+
+  free(pool); /* cleaning the whole thing */
+  
+  return 0;
+}  
