@@ -53,5 +53,4 @@ struct PageCacheE {
   c89atomic_uint32 numPages;      /* total number of pages in the hash table */
   c89atomic_uint32 numHashSlot;   /* num of hash slots in the hash table */
 };
-
 #endif
