@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /build-ninja
 src/storage/#pageCache.c#
 /build
+/compile_commands.json
