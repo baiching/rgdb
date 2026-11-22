@@ -75,7 +75,7 @@ int lruDestroy(Lru *pool) {
   free(pool); /* cleaning the whole thing */
   
   return 0;
-}  
+}
 
 int lruLookUp(Lru *pool, BufferTag *tag) {
 
@@ -90,7 +90,7 @@ int lruLookUp(Lru *pool, BufferTag *tag) {
         b->tag.blockNum == tag->blockNum) {
       return b->buf_id;
     }
-}
+  }
   return -1;
 }
 
