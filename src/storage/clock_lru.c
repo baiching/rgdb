@@ -65,9 +65,12 @@ int lruDestroy(Lru *pool) {
   lruFlush_all(pool); /* if not empty flush it all first */
 
   /* cleaning up pages individually */
+  /*
   for (int i = 0; i < rgdb_config_cacheBufferSz; i++){
     free(pool->buffer[i].data);
   }
+  */
+  free(pool->arena);
 
   free(pool); /* cleaning the whole thing */
   
