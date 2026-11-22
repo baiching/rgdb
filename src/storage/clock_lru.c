@@ -93,3 +93,15 @@ int lruLookUp(Lru *pool, BufferTag *tag) {
 }
   return -1;
 }
+
+
+BufferDesc* lruGetDesciption(Lru* pool, int buf_id) {
+    if (pool == NULL) return NULL;
+
+    if (buf_id < 0 || buf_id > rgdb_config_cacheBufferSz)
+    {
+        return NULL;
+    }
+    return &pool->buffer[buf_id];
+}
+
