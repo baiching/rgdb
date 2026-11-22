@@ -76,3 +76,20 @@ int lruDestroy(Lru *pool) {
   
   return 0;
 }  
+
+int lruLookUp(Lru *pool, BufferTag *tag) {
+
+  if (pool == NULL || tag == NULL) {
+    return -1;
+  }
+
+  for (int i = 0; i < rgdb_config_cacheBufferSz; i++) {
+    BufferDesc *b = &pool->buffer[i];
+
+    if (b->is_valid && b->tag.relNode == tag->relNode &&
+        b->tag.blockNum == tag->blockNum) {
+      return b->buf_id;
+    }
+}
+  return -1;
+}
