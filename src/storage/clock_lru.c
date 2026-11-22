@@ -27,7 +27,7 @@ static void resetFrame(BufferDesc *b) {
 
 } 
 
-Lru *ruInit() {
+Lru *ruInit(void) {
 
   Lru *pool = calloc(1, sizeof(*pool));
 
@@ -42,9 +42,12 @@ Lru *ruInit() {
     return NULL;
   }
 
+  memset(pool->arena, 0, arena_size);
+
   for (int i = 0; i < rgdb_config_cacheBufferSz; i++) {
-    pool->buffer[i].data = pool->arena + (size_t)i * rgdb_config_pageSize;
+
     pool->buffer[i].buf_id = i;
+    pool->buffer[i].data = (uint8_t *)pool->arena + (size_t)i * rgdb_config_pageSize;
     resetFrame(&pool->buffer[i]);
   }
 
