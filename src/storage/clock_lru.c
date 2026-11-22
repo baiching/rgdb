@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void setRefBit(BufferDesc *b, uint64_t v) {
+  c89atomic_store_64(&b->refBit, v);
+}
+
 static void resetFrame(BufferDesc *b) {
   b->is_valid = false;
   b->is_dirty = false;
