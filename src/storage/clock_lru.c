@@ -12,9 +12,13 @@ static void setRefBit(BufferDesc *b, uint64_t v) {
 }
 
 static void resetFrame(BufferDesc *b) {
+
+  if (b == NULL)
+    return;
+  
   b->is_valid = false;
   b->is_dirty = false;
-  c89atomic_store_64(&b->refBit, 0);
+  setRefBit(b, 0);
   memset(&b->tag, 0, sizeof(b->tag));
 
   if (b->data != NULL) {
