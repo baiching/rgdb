@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "../../rgdb_sysconf.h"
 
 #include "common/c89atomic.h"
 
@@ -22,13 +23,12 @@ struct BufferDesc {
   BufferTag tag;
   c89atomic_bool is_valid; /* true, if slot is not empty */
   bool is_dirty; /* true, if dirty */
-  c89atomic_int64
-      refBit; /* 0 means ready to evict, 1 means give a second chance */
+  c89atomic_int64 refBit; /* 0 means ready to evict, 1 means give a second chance */
   uint8_t *data;
 };
 
 struct Lru {
-  BufferDesc buffer[BUFFER_POOL_SIZE];
+  BufferDesc buffer[rgdb_config_cacheBufferSz];
   size_t clockHand;
   void *arena;
 };
@@ -44,7 +44,7 @@ int lruLookup(const Lru *pool, const BufferTag *tag);
 BufferDesc *lruGetDescription(Lru *pool, int buf_id);
 
 /* Page data for a resident page, or NULL. Bumps ref_bit. */
-void *lruRead (Lru *pool, const BufferTag *tag);
+void *lruRead (Lru *pool, BufferTag *tag);
 void *lruWrite(Lru *pool, const BufferTag *tag); /* marks dirty */
 
 /* ---- eviction ----
