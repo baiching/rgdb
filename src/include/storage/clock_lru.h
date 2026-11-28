@@ -20,7 +20,7 @@ struct BufferTag {
 struct BufferDesc {
   int buf_id;
   BufferTag tag;
-  bool is_valid; /* true, if slot is not empty */
+  c89atomic_bool is_valid; /* true, if slot is not empty */
   bool is_dirty; /* true, if dirty */
   c89atomic_int64
       refBit; /* 0 means ready to evict, 1 means give a second chance */
