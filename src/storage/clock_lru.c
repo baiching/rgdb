@@ -15,6 +15,32 @@ static int64_t refBitOf(const BufferDesc* b) {
     /* atomic load on a const object: the value is only observed here */
     return c89atomic_load_64((c89atomic_int64*)&b->refBit);
 }
+
+/* 
+* Finds victim to evict in the cache 
+* we go through the cache twice if first time we don't get hits
+* set the bits to 0 if they are not pinned by others
+*/
+static BufferDesc* clockNextVictim(Lru* pool) {
+    size_t i;
+
+    for (i = 0; i < (size_t)rgdb_config_cacheBufferSz * 2; i++) {
+        BufferDesc* b = &pool->buffer[pool->clockHand];
+
+        pool->clockHand = (pool->clockHand + 1) % (size_t)rgdb_config_cacheBufferSz;
+
+        if (!b->is_valid)
+            return b;
+
+        if (refBitOf(b) == 0)
+            return b;
+
+        setRefBit(b, 0); /* second chance */
+    }
+
+    return NULL;
+}
+
 static void resetFrame(BufferDesc *b) {
 
   if (b == NULL)
