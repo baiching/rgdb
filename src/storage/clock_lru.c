@@ -121,7 +121,7 @@ int lruLookUp(Lru *pool, BufferTag *tag) {
 BufferDesc* lruGetDesciption(Lru* pool, int buf_id) {
     if (pool == NULL) return NULL;
 
-    if (buf_id < 0 || buf_id > rgdb_config_cacheBufferSz)
+    if (buf_id < 0 || buf_id >= rgdb_config_cacheBufferSz)
     {
         return NULL;
     }
@@ -135,5 +135,33 @@ BufferDesc* lruGetDesciption(Lru* pool, int buf_id) {
     }
     /* if buffer_id is legit */
     return &pool->buffer[buf_id];
+}
+
+void* lruRead(Lru* pool, BufferTag* tag) {
+    BufferDesc* b;
+    int buf_id;
+
+    if (pool == NULL || tag == NULL) {
+        LOG("lru or buffer tag is empty.\n");
+        return NULL;
+    }
+
+    buf_id = lruLookUp(pool, tag);
+
+    if (buf_id >= 0 && (&pool->buffer[buf_id])->is_valid == true) {
+        b = &pool->buffer[buf_id];
+    }
+    else {
+        b = allocFrame(pool, tag);
+
+        if (b == NULL) {
+            LOG("No frames are allocated.\n");
+            return NULL;
+        }
+    }
+    /* TODO: read from the disk */
+    setRefBit(b, 1);
+
+    return b->data;
 }
 
