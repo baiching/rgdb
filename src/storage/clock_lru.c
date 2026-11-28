@@ -11,6 +11,10 @@ static void setRefBit(BufferDesc *b, uint64_t v) {
   c89atomic_store_64(&b->refBit, v);
 }
 
+static int64_t refBitOf(const BufferDesc* b) {
+    /* atomic load on a const object: the value is only observed here */
+    return c89atomic_load_64((c89atomic_int64*)&b->refBit);
+}
 static void resetFrame(BufferDesc *b) {
 
   if (b == NULL)
