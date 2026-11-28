@@ -57,6 +57,28 @@ static void resetFrame(BufferDesc *b) {
 
 } 
 
+/* ----------------- */
+/* Currently it doesn't write to the disk */
+/* this part is a TODO */
+static int writePageToDisk(const BufferDesc* b) {
+    (void)b;
+    return 0;
+}
+
+static int flushFrame(BufferDesc* b) {
+    if (b == NULL)
+        return -1;
+    if (!b->is_valid || !b->is_dirty)
+        return 0;
+    if (writePageToDisk(b) != 0) {
+        LOG("clock_lru: write-back failed");
+        return -1;
+    }
+    b->is_dirty = false;
+    return 0;
+}
+/* ---------------------- */
+
 /* claims an available frame */
 static BufferDesc* allocFrame(Lru* pool, BufferTag* tag) {
     BufferDesc* b = clockNextVictim(pool); /* finding eviction victim */
