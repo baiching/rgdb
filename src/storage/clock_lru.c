@@ -148,7 +148,7 @@ void* lruRead(Lru* pool, BufferTag* tag) {
 
     buf_id = lruLookUp(pool, tag);
 
-    if (buf_id >= 0 && (&pool->buffer[buf_id])->is_valid == true) {
+    if (buf_id >= 0) {
         b = &pool->buffer[buf_id];
     }
     else {
@@ -162,6 +162,33 @@ void* lruRead(Lru* pool, BufferTag* tag) {
     /* TODO: read from the disk */
     setRefBit(b, 1);
 
+    return b->data;
+}
+
+void* lruWrite(Lru* pool, BufferTag* tag) {
+    BufferDesc* b;
+    int buf_id;
+
+    if (pool == NULL || tag == NULL) {
+        LOG("lru or buffer tag is empty.\n");
+        return NULL;
+    }
+
+    buf_id = lruLookUp(pool, tag);
+
+    if (buf_id >= 0 && (&pool->buffer[buf_id])->is_valid == true) {
+        b = &pool->buffer[buf_id];
+    }
+    else {
+        b = allocFrame(pool, tag);
+        if (b == NULL) {
+            LOG("No frames are allocated.\n");
+            return NULL;
+        }   
+    }
+
+    b->is_dirty = true;
+    setRefBit(b, 1);
     return b->data;
 }
 
