@@ -3,7 +3,7 @@ set(headers "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_subdirectory(storage)
 
-add_executable(rgdb "rgdb.c" "common/logger.c")
+add_executable(rgdb "rgdb.c" "common/logger.c" "common/tinycthread.c")
 
 target_link_libraries(rgdb PRIVATE storage)
 

@@ -1,4 +1,4 @@
-add_library(storage STATIC page_allocator.c "pageCache.c")
+add_library(storage STATIC page_allocator.c "pageCache.c" "clock_lru.c" "pageCache.c")
 
 # Sources include the headers qualified by module folder ("storage/..."), so
 # the include root is src/include, not this directory.
