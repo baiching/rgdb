@@ -125,6 +125,15 @@ BufferDesc* lruGetDesciption(Lru* pool, int buf_id) {
     {
         return NULL;
     }
+
+    BufferDesc* buf = &pool->buffer[buf_id];
+
+    /* return null if the slot is empty */
+    if (buf->is_valid == false) {
+        LOG("the slot %d is empty or doesn't exist on the cache.\n", buf_id);
+        return NULL;
+    }
+    /* if buffer_id is legit */
     return &pool->buffer[buf_id];
 }
 
