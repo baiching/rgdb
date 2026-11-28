@@ -27,6 +27,29 @@ static void resetFrame(BufferDesc *b) {
 
 } 
 
+/* claims an available frame */
+static BufferDesc* allocFrame(Lru* pool, BufferTag* tag) {
+    BufferDesc* b = clockNextVictim(pool); /* finding eviction victim */
+
+    if (b == NULL) {
+        LOG("No victim frames were found.\n");
+        return NULL;
+    }
+
+    if (b->is_valid && b->is_dirty && flushFrame(b) != 0) {
+        LOG("flushing failed.\n");
+        return NULL;
+    }
+
+    resetFrame(b);
+    b->tag = *tag; /* puting new tag values */
+    b->is_valid = true;
+
+    /* storage manager needs to be implemented */
+
+    return b;
+}
+
 Lru *ruInit(void) {
 
   Lru *pool = calloc(1, sizeof(*pool));
